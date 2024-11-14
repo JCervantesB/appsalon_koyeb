@@ -3,78 +3,149 @@
 namespace Classes;
 
 use PHPMailer\PHPMailer\PHPMailer;
+use Dotenv\Dotenv as Dotenv;
+$dotenv = Dotenv::createImmutable('../includes/.env');
+$dotenv->safeLoad();
 
 class Email {
 
-    public $email;
     public $nombre;
+    public $email;
     public $token;
-    
-    public function __construct($email, $nombre, $token)
+
+    public function __construct($nombre, $email, $token)
     {
-        $this->email = $email;
         $this->nombre = $nombre;
+        $this->email = $email;
         $this->token = $token;
     }
 
     public function enviarConfirmacion() {
+        // Crear el objeto de email
+        $mail = new PHPMailer();
 
-         // create a new object
-         $mail = new PHPMailer();
-         $mail->isSMTP();
-         $mail->Host = $_ENV['EMAIL_HOST'];
-         $mail->SMTPAuth = true;
-         $mail->Port = $_ENV['EMAIL_PORT'];
-         $mail->Username = $_ENV['EMAIL_USER'];
-         $mail->Password = $_ENV['EMAIL_PASSWORD'];
-     
-         $mail->setFrom('cuentas@appsalon.com');
-         $mail->addAddress('cuentas@appsalon.com', 'AppSalon.com');
-         $mail->Subject = 'Confirma tu Cuenta';
+        // Configurar SMTP
+        //$mail->getSentMIMEMEssage();
+        $mail->isSMTP();
+        $mail->Host =$_ENV['EMAIL_HOST'];
+        $mail->SMTPAuth = true;
+        $mail->Username =$_ENV['EMAIL_USER'];
+        $mail->Password =$_ENV['EMAIL_PASSWORD'];
+        $mail->SMTPSecure = 'tls';
+        $mail->Port =$_ENV['EMAIL_PORT'];
 
-         // Set HTML
-         $mail->isHTML(TRUE);
-         $mail->CharSet = 'UTF-8';
+        // Contenido del email
+        $mail->setFrom('cuentas@appsalon.com');
+        $mail->addAddress($this->email);
+        $mail->Subject = 'Confirma tu cuenta';
 
-         $contenido = '<html>';
-         $contenido .= "<p><strong>Hola " . $this->email .  "</strong> Has Creado tu cuenta en App Salón, solo debes confirmarla presionando el siguiente enlace</p>";
-         $contenido .= "<p>Presiona aquí: <a href='http://localhost:3000/confirmar-cuenta?token=" . $this->token . "'>Confirmar Cuenta</a>";        
-         $contenido .= "<p>Si tu no solicitaste este cambio, puedes ignorar el mensaje</p>";
-         $contenido .= '</html>';
-         $mail->Body = $contenido;
+        // Habilitar HTML
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
 
-         //Enviar el mail
-         $mail->send();
+        $contenido = "<html>";
+        $contenido .= "<head>";
+        $contenido .= "<style>";
+        $contenido .= "body { font-family: 'Arial', sans-serif; margin: 0; display: flex; justify-content: center; padding: 2rem; background-color: #f0f0f0; text-align: center;}";
+        $contenido .= ".contenedor { background-color: #fff; padding: 2rem; border-radius: 5px; }";
+        $contenido .= "h1 { margin-bottom: 2rem; }";
+        $contenido .= "p { color: #333; text-align: left; }";
+        $contenido .= "a {";
+        $contenido .= "   display: inline-block;";
+        $contenido .= "   padding: 10px 20px;";
+        $contenido .= "   background-color: #3498db;";
+        $contenido .= "   color: #fff !important;";
+        $contenido .= "   text-decoration: none;";
+        $contenido .= "   font-weight: bold;";
+        $contenido .= "   border-radius: 5px;";
+        $contenido .= "   margin-bottom: 1rem;";
+        $contenido .= "}";
+        $contenido .= "a:visited { color: #fff !important; }";
+        $contenido .= ".small { font-size: 0.8rem; color: #999; text-align: center; }";
+        $contenido .= "</style>";
+        $contenido .= "</head>";
+        $contenido .= "<body>";
+        $contenido .= "<div class='contenedor'>";
+        $contenido .= "<h1>¡Bienvenido!</h1>";
+        $contenido .= "<p>Hola <span style='color: #3498db;'>" . $this->nombre . "</span>,</p>";
+        $contenido .= "<p>Gracias por crear tu cuenta en AppSalon.</p>";
+        $contenido .= "<p>Para confirmar tu cuenta, haz clic en el siguiente botón:</p>";
+        $contenido .= "<a href='" . $_ENV['APP'] . "/confirmar-cuenta?token=" . $this->token . "'>Confirmar Cuenta</a>";
+        $contenido .= "<br>";
+        $contenido .= "<hr>";
+        $contenido .= "<p class='small'>Si no solicitaste esta cuenta, puedes ignorar este mensaje.</p>";
+        $contenido .= "</div>";
+        $contenido .= "</body>";
+        $contenido .= "</html>";
+        
 
+        $mail->Body = $contenido;
+
+        // Enviamos el email
+        $mail->send();
     }
 
     public function enviarInstrucciones() {
-
-        // create a new object
+        // Crear el objeto de email
         $mail = new PHPMailer();
+
+        // Configurar SMTP
         $mail->isSMTP();
-        $mail->Host = 'smtp.mailtrap.io';
+        $mail->Host =$_ENV['EMAIL_HOST'];
         $mail->SMTPAuth = true;
-        $mail->Port = 2525;
-        $mail->Username = '4ec54dfb980a42';
-        $mail->Password = 'ae938c99960f22';
-    
+        $mail->Username =$_ENV['EMAIL_USER'];
+        $mail->Password =$_ENV['EMAIL_PASSWORD'];
+        $mail->SMTPSecure = 'tls';
+        $mail->Port =$_ENV['EMAIL_PORT'];
+
+        // Contenido del email
         $mail->setFrom('cuentas@appsalon.com');
-        $mail->addAddress('cuentas@appsalon.com', 'AppSalon.com');
+        $mail->addAddress($this->email);
         $mail->Subject = 'Reestablece tu password';
 
-        // Set HTML
-        $mail->isHTML(TRUE);
+        // Habilitar HTML
+        $mail->isHTML(true);
         $mail->CharSet = 'UTF-8';
 
-        $contenido = '<html>';
-        $contenido .= "<p><strong>Hola " . $this->nombre .  "</strong> Has solicitado reestablecer tu password, sigue el siguiente enlace para hacerlo.</p>";
-        $contenido .= "<p>Presiona aquí: <a href='http://localhost:3000/recuperar?token=" . $this->token . "'>Reestablecer Password</a>";        
-        $contenido .= "<p>Si tu no solicitaste este cambio, puedes ignorar el mensaje</p>";
-        $contenido .= '</html>';
+        $contenido = "<html>";
+        $contenido .= "<head>";
+        $contenido .= "<style>";
+        $contenido .= "body { font-family: 'Arial', sans-serif; margin: 0; display: flex; justify-content: center; padding: 2rem; background-color: #f0f0f0; text-align: center;}";
+        $contenido .= ".contenedor { background-color: #fff; padding: 2rem; border-radius: 5px; }";
+        $contenido .= "h1 { margin-bottom: 2rem; }";
+        $contenido .= "p { color: #333; text-align: left; }";
+        $contenido .= "a {";
+        $contenido .= "   display: inline-block;";
+        $contenido .= "   padding: 10px 20px;";
+        $contenido .= "   background-color: #3498db;";
+        $contenido .= "   color: #fff !important;";
+        $contenido .= "   text-decoration: none;";
+        $contenido .= "   font-weight: bold;";
+        $contenido .= "   border-radius: 5px;";
+        $contenido .= "   margin-bottom: 1rem;";
+        $contenido .= "}";
+        $contenido .= "a:visited { color: #fff !important; }";
+        $contenido .= ".small { font-size: 0.8rem; color: #999; text-align: center; }";
+        $contenido .= "</style>";
+        $contenido .= "</head>";
+        $contenido .= "<body>";
+        $contenido .= "<div class='contenedor'>";
+        $contenido .= "<h1>¡Recuperar mi cuenta!</h1>";
+        $contenido .= "<p>Hola <span style='color: #3498db;'>" . $this->nombre . "</span>,</p>";
+        $contenido .= "<p>Haz solicitado reestablecer tu password de AppSalon.</p>";
+        $contenido .= "<p>Puedes hacerlo dando clic en el siguiente botón</p>";
+        $contenido .= "<a href='" . $_ENV['APP'] . "/recuperar?token=" . $this->token . "'>Reestablecer Password</a>";
+        $contenido .= "<br>";
+        $contenido .= "<hr>";
+        $contenido .= "<p class='small'>Si no fuiste tú, puedes ignorar este mensaje.</p>";
+        $contenido .= "</div>";
+        $contenido .= "</body>";
+        $contenido .= "</html>";
+
         $mail->Body = $contenido;
 
-            //Enviar el mail
+        // Enviamos el email
         $mail->send();
     }
+
 }
