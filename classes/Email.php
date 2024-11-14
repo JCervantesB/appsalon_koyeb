@@ -6,38 +6,33 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class Email {
 
-    public $nombre;
     public $email;
+    public $nombre;
     public $token;
-
-    public function __construct($nombre, $email, $token)
+    
+    public function __construct($email, $nombre, $token)
     {
-        $this->nombre = $nombre;
         $this->email = $email;
+        $this->nombre = $nombre;
         $this->token = $token;
     }
 
     public function enviarConfirmacion() {
-        // Crear el objeto de email
+        // Crear el objeto de PHPMailer
         $mail = new PHPMailer();
-
-        // Configurar SMTP
-        //$mail->getSentMIMEMEssage();
         $mail->isSMTP();
-        $mail->Host =$_ENV['EMAIL_HOST'];
+        $mail->Host = $_ENV['EMAIL_HOST'];
         $mail->SMTPAuth = true;
-        $mail->Username =$_ENV['EMAIL_USER'];
-        $mail->Password =$_ENV['EMAIL_PASSWORD'];
-        $mail->SMTPSecure = 'tls';
-        $mail->Port =$_ENV['EMAIL_PORT'];
-
-        // Contenido del email
-        $mail->setFrom('cuentas@appsalon.com');
+        $mail->Port = $_ENV['EMAIL_PORT'];
+        $mail->Username = $_ENV['EMAIL_USERNAME'];
+        $mail->Password = $_ENV['EMAIL_PASSWORD'];
+    
+        $mail->setFrom($_ENV['EMAIL_FROM']);
         $mail->addAddress($this->email);
-        $mail->Subject = 'Confirma tu cuenta';
+        $mail->Subject = 'Confirma tu Cuenta';
 
-        // Habilitar HTML
-        $mail->isHTML(true);
+        // Configurar el HTML
+        $mail->isHTML(TRUE);
         $mail->CharSet = 'UTF-8';
 
         $contenido = "<html>";
@@ -74,34 +69,28 @@ class Email {
         $contenido .= "</div>";
         $contenido .= "</body>";
         $contenido .= "</html>";
-        
-
         $mail->Body = $contenido;
 
-        // Enviamos el email
+        // Enviar el mail
         $mail->send();
     }
 
     public function enviarInstrucciones() {
-        // Crear el objeto de email
+        // Crear el objeto de PHPMailer
         $mail = new PHPMailer();
-
-        // Configurar SMTP
         $mail->isSMTP();
-        $mail->Host =$_ENV['EMAIL_HOST'];
+        $mail->Host = $_ENV['EMAIL_HOST'];
         $mail->SMTPAuth = true;
-        $mail->Username =$_ENV['EMAIL_USER'];
-        $mail->Password =$_ENV['EMAIL_PASSWORD'];
-        $mail->SMTPSecure = 'tls';
-        $mail->Port =$_ENV['EMAIL_PORT'];
-
-        // Contenido del email
-        $mail->setFrom('cuentas@appsalon.com');
+        $mail->Port = $_ENV['EMAIL_PORT'];
+        $mail->Username = $_ENV['EMAIL_USERNAME'];
+        $mail->Password = $_ENV['EMAIL_PASSWORD'];
+    
+        $mail->setFrom($_ENV['EMAIL_FROM']);
         $mail->addAddress($this->email);
         $mail->Subject = 'Reestablece tu password';
 
-        // Habilitar HTML
-        $mail->isHTML(true);
+        // Configurar el HTML
+        $mail->isHTML(TRUE);
         $mail->CharSet = 'UTF-8';
 
         $contenido = "<html>";
@@ -131,18 +120,16 @@ class Email {
         $contenido .= "<p>Hola <span style='color: #3498db;'>" . $this->nombre . "</span>,</p>";
         $contenido .= "<p>Haz solicitado reestablecer tu password de AppSalon.</p>";
         $contenido .= "<p>Puedes hacerlo dando clic en el siguiente botón</p>";
-        $contenido .= "<a href='" . $_ENV['APP'] . "/recuperar?token=" . $this->token . "'>Reestablecer Password</a>";
+        $contenido .= "<a href='" . $_ENV['SERVER_HOST'] . "/recuperar?token=" . $this->token . "'>Reestablecer Password</a>";
         $contenido .= "<br>";
         $contenido .= "<hr>";
         $contenido .= "<p class='small'>Si no fuiste tú, puedes ignorar este mensaje.</p>";
         $contenido .= "</div>";
         $contenido .= "</body>";
         $contenido .= "</html>";
-
         $mail->Body = $contenido;
 
-        // Enviamos el email
+        // Enviar el mail
         $mail->send();
     }
-
 }
