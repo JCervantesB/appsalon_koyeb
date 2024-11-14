@@ -24,10 +24,10 @@ class Email {
         $mail->Host = $_ENV['EMAIL_HOST'];
         $mail->SMTPAuth = true;
         $mail->Port = $_ENV['EMAIL_PORT'];
-        $mail->Username = $_ENV['EMAIL_USERNAME'];
+        $mail->Username = $_ENV['EMAIL_USER'];
         $mail->Password = $_ENV['EMAIL_PASSWORD'];
     
-        $mail->setFrom($_ENV['EMAIL_FROM']);
+        $mail->setFrom('cuentas@appsalon.com');
         $mail->addAddress($this->email);
         $mail->Subject = 'Confirma tu Cuenta';
 
@@ -82,10 +82,10 @@ class Email {
         $mail->Host = $_ENV['EMAIL_HOST'];
         $mail->SMTPAuth = true;
         $mail->Port = $_ENV['EMAIL_PORT'];
-        $mail->Username = $_ENV['EMAIL_USERNAME'];
+        $mail->Username = $_ENV['EMAIL_USER'];
         $mail->Password = $_ENV['EMAIL_PASSWORD'];
     
-        $mail->setFrom($_ENV['EMAIL_FROM']);
+        $mail->setFrom('cuentas@appsalon.com');
         $mail->addAddress($this->email);
         $mail->Subject = 'Reestablece tu password';
 
